@@ -112,6 +112,7 @@ public class ContainerActivity extends RxAppCompatActivity {
         return super.dispatchTouchEvent(ev);
     }
 
+
     private boolean isShouldHideKeyboard(View v, MotionEvent event) {
         if (v != null && (v instanceof EditText)) {
             int[] l = {0, 0};
@@ -139,10 +140,30 @@ public class ContainerActivity extends RxAppCompatActivity {
         }
     }
 
+
+    private boolean isShouldHideKeyboard(View v) {
+        if (v != null && (v instanceof EditText)) {
+            int[] l = {0, 0};
+            v.getLocationInWindow(l);
+            int left = l[0],
+                    top = l[1],
+                    bottom = top + v.getHeight(),
+                    right = left + v.getWidth();
+            return true;
+        }
+        // 如果焦点不是EditText则忽略，这个发生在视图刚绘制完，第一个焦点不在EditText上，和用户用轨迹球选择其他的焦点
+        return false;
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(onKeyHandler!=null){
             onKeyHandler.onKeyDown(keyCode,event);
+        }
+        View v = getCurrentFocus();
+        if (v!=null) {
+            v.requestFocusFromTouch();
+            if(isShouldHideKeyboard(v))hideKeyboard(v.getWindowToken());
         }
         return super.onKeyDown(keyCode, event);
     }
