@@ -8,6 +8,7 @@ import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,4 +139,30 @@ public class ContainerActivity extends RxAppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(onKeyHandler!=null){
+            onKeyHandler.onKeyDown(keyCode,event);
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if(onKeyHandler!=null){
+            onKeyHandler.onKeyUp(keyCode,event);
+        }
+        return super.onKeyUp(keyCode, event);
+    }
+
+    private OnKeyHandler onKeyHandler;
+
+
+    public OnKeyHandler getOnKeyHandler() {
+        return onKeyHandler;
+    }
+
+    public void setOnKeyHandler(OnKeyHandler onKeyHandler) {
+        this.onKeyHandler = onKeyHandler;
+    }
 }
