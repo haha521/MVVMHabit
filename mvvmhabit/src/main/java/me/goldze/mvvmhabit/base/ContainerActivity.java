@@ -38,7 +38,6 @@ public class ContainerActivity extends RxAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_container);
         FragmentManager fm = getSupportFragmentManager();
@@ -54,6 +53,8 @@ public class ContainerActivity extends RxAppCompatActivity {
         trans.replace(R.id.content, fragment);
         trans.commitAllowingStateLoss();
         mFragment = new WeakReference<>(fragment);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     @Override
