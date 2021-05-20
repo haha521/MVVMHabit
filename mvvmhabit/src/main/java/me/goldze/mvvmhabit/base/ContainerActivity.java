@@ -1,7 +1,11 @@
 package me.goldze.mvvmhabit.base;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PersistableBundle;
@@ -20,6 +24,7 @@ import android.widget.LinearLayout;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 import me.goldze.mvvmhabit.R;
 
@@ -186,5 +191,62 @@ public class ContainerActivity extends RxAppCompatActivity {
 
     public void setOnKeyHandler(OnKeyHandler onKeyHandler) {
         this.onKeyHandler = onKeyHandler;
+    }
+
+
+    private BroadcastReceiver wifiScanReceiver;
+    private WifiManager wifiManager;
+
+    @Override
+    protected void onResume() {
+        wifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        wifiScanReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context c, Intent intent) {
+                boolean success = intent.getBooleanExtra(
+                        WifiManager.EXTRA_RESULTS_UPDATED, false);
+                if (success) {
+                    scanSuccess();
+                } else {
+                    // scan failure handling
+                    scanFailure();
+                }
+            }
+        };
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        registerReceiver(wifiScanReceiver, intentFilter);
+
+        boolean success = wifiManager.startScan();
+        if (!success) {
+            // scan failure handling
+            scanFailure();
+        }
+        super.onResume();
+    }
+
+
+    private void scanSuccess() {
+        System.out.println("wifi扫描成功！！！！！");
+        List<ScanResult> results = wifiManager.getScanResults();
+        for (ScanResult r:results
+             ) {
+            System.out.println("BSSID:"+r.BSSID);
+            System.out.println("SSID:"+r.SSID);
+        }
+    }
+
+    private void scanFailure() {
+        // handle failure: new scan did NOT succeed
+        // consider using old scan results: these are the OLD results!
+        System.out.println("wifi扫描失败！！！！！");
+        List<ScanResult> results = wifiManager.getScanResults();
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(wifiScanReceiver);
+        super.onPause();
     }
 }
