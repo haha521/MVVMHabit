@@ -7,7 +7,9 @@ import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -25,6 +27,8 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import me.goldze.mvvmhabit.R;
 
@@ -196,6 +200,22 @@ public class ContainerActivity extends RxAppCompatActivity {
 
     private BroadcastReceiver wifiScanReceiver;
     private WifiManager wifiManager;
+    private Timer timer;
+    private MyTimerTask task;
+
+    public class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+            try {
+                wifiManager.startScan();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+    }
 
     @Override
     protected void onResume() {
@@ -217,12 +237,9 @@ public class ContainerActivity extends RxAppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         registerReceiver(wifiScanReceiver, intentFilter);
-
-        boolean success = wifiManager.startScan();
-        if (!success) {
-            // scan failure handling
-            scanFailure();
-        }
+        task = new MyTimerTask();
+        timer = new Timer();
+        timer.schedule(task, 1000, 60000);
         super.onResume();
     }
 
@@ -230,6 +247,7 @@ public class ContainerActivity extends RxAppCompatActivity {
     private void scanSuccess() {
         System.out.println("wifi扫描成功！！！！！");
         List<ScanResult> results = wifiManager.getScanResults();
+        System.out.println("wifi扫描成功的结果："+results);
         for (ScanResult r:results
              ) {
             System.out.println("BSSID:"+r.BSSID);
@@ -246,6 +264,14 @@ public class ContainerActivity extends RxAppCompatActivity {
 
     @Override
     protected void onPause() {
+        if (task != null) {
+            task.cancel();
+        }
+        if (timer != null) {
+            timer.cancel();
+        }
+        task = null;
+        timer = null;
         unregisterReceiver(wifiScanReceiver);
         super.onPause();
     }
