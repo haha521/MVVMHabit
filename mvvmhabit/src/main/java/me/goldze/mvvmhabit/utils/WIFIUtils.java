@@ -94,9 +94,9 @@ public class WIFIUtils {
             if (configuredNetworks != null && configuredNetworks.size() > 0) {
                 WifiConfiguration wifiConfiguration = IsExsits(wifiName);
                 if(wifiConfiguration==null){
-                    if(configuredNetworks.get(0).status==WifiConfiguration.Status.DISABLED){
-                        wifiManager.enableNetwork(configuredNetworks.get(0).networkId, true);
-                    }
+//                    if(configuredNetworks.get(0).status==WifiConfiguration.Status.DISABLED){
+//                        wifiManager.enableNetwork(configuredNetworks.get(0).networkId, true);
+//                    }
                 }else {
                     for (WifiConfiguration w:configuredNetworks
                     ) {
