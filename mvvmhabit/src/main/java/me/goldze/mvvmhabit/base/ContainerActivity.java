@@ -1,7 +1,10 @@
 package me.goldze.mvvmhabit.base;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
@@ -11,6 +14,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.PersistableBundle;
+import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -20,17 +25,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.tbruyelle.rxpermissions2.Permission;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import io.reactivex.functions.Consumer;
 import me.goldze.mvvmhabit.R;
+import me.goldze.mvvmhabit.utils.WIFIUtils;
 
 import static android.view.View.generateViewId;
 
@@ -43,6 +56,7 @@ public class ContainerActivity extends RxAppCompatActivity {
     private static final String FRAGMENT_TAG = "content_fragment_tag";
     public static final String FRAGMENT = "fragment";
     public static final String BUNDLE = "bundle";
+    private String wifiName = "yidatest";
     protected WeakReference<Fragment> mFragment;
 
     @Override
@@ -197,82 +211,95 @@ public class ContainerActivity extends RxAppCompatActivity {
         this.onKeyHandler = onKeyHandler;
     }
 
+    private WIFIUtils wifiUtils;
 
-    private BroadcastReceiver wifiScanReceiver;
-    private WifiManager wifiManager;
-    private Timer timer;
-    private MyTimerTask task;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        RxPermissions rxPermission = new RxPermissions(this);
+        rxPermission.requestEach(Manifest.permission.ACCESS_FINE_LOCATION)
+                .subscribe(new Consumer<Permission>() {
+                    @Override
+                    public void accept(Permission permission) {
+                        if (permission.granted) {// 用户已经同意该权限
+                            if(wifiUtils==null){
+                                wifiUtils = new WIFIUtils((WifiManager) ContainerActivity.this.getApplicationContext().getSystemService(Context.WIFI_SERVICE),ContainerActivity.this,wifiName);
+                            }
+                            if (!wifiUtils.isLocationServiceEnable(getApplicationContext())) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(ContainerActivity.this);
+                                builder.setMessage("系统未打开位置信息服务，是否打开位置服务，以实现自动连接WiFi功能？");
+                                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                        startActivityForResult(intent, 10000);
+                                    }
+                                });
+                                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                                Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                                button.setTextSize(28);
+                                Button button2 = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                                button2.setTextSize(28);
+                                button.setTextColor(getResources().getColor(R.color.blue));
+                                button2.setTextColor(getResources().getColor(R.color.blue));
+                                try {
+                                    //获取mAlert对象
+                                    Field mAlert = AlertDialog.class.getDeclaredField("mAlert");
+                                    mAlert.setAccessible(true);
+                                    Object mAlertController = mAlert.get(dialog);
+                                    //获取mMessageView并设置大小颜色
+                                    Field mMessage = mAlertController.getClass().getDeclaredField("mMessageView");
+                                    mMessage.setAccessible(true);
+                                    TextView mMessageView = (TextView) mMessage.get(mAlertController);
+//                mMessageView.setTextColor(Color.BLUE);
+                                    mMessageView.setTextSize(30);
+                                    //获取mTitleView并设置大小颜色
+                                } catch (NoSuchFieldException e) {
+                                    e.printStackTrace();
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                wifiUtils.startWifiListener();
+                            }
+                        } else {
 
-    public class MyTimerTask extends TimerTask {
-
-        @Override
-        public void run() {
-            // TODO Auto-generated method stub
-            try {
-                wifiManager.startScan();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
+                        }
+                    }
+                });
     }
 
     @Override
-    protected void onResume() {
-        wifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiScanReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context c, Intent intent) {
-                boolean success = intent.getBooleanExtra(
-                        WifiManager.EXTRA_RESULTS_UPDATED, false);
-                if (success) {
-                    scanSuccess();
-                } else {
-                    // scan failure handling
-                    scanFailure();
-                }
-            }
-        };
-
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-        registerReceiver(wifiScanReceiver, intentFilter);
-        task = new MyTimerTask();
-        timer = new Timer();
-        timer.schedule(task, 1000, 60000);
-        super.onResume();
-    }
-
-
-    private void scanSuccess() {
-        System.out.println("wifi扫描成功！！！！！");
-        List<ScanResult> results = wifiManager.getScanResults();
-        System.out.println("wifi扫描成功的结果："+results);
-        for (ScanResult r:results
-             ) {
-            System.out.println("BSSID:"+r.BSSID);
-            System.out.println("SSID:"+r.SSID);
+    protected void onStop() {
+        if(wifiUtils!=null){
+            wifiUtils.unRegisterReceiver();
         }
-    }
-
-    private void scanFailure() {
-        // handle failure: new scan did NOT succeed
-        // consider using old scan results: these are the OLD results!
-        System.out.println("wifi扫描失败！！！！！");
-        List<ScanResult> results = wifiManager.getScanResults();
+        super.onStop();
     }
 
     @Override
-    protected void onPause() {
-        if (task != null) {
-            task.cancel();
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode==10000){
+            if(resultCode==RESULT_OK&&wifiUtils!=null){
+                wifiUtils.startWifiListener();
+            }
         }
-        if (timer != null) {
-            timer.cancel();
-        }
-        task = null;
-        timer = null;
-        unregisterReceiver(wifiScanReceiver);
-        super.onPause();
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public String getWifiName() {
+        return wifiName;
+    }
+
+    public void setWifiName(String wifiName) {
+        this.wifiName = wifiName;
     }
 }
