@@ -78,43 +78,44 @@ public class WIFIUtils {
     }
 
     private void connectWifi(){
+        wifiManager.reconnect();
 //        if (!wifiManager.isWifiEnabled()) {
 //            System.out.println("wifi未打开！！！！！");
 //            wifiManager.setWifiEnabled(true);
 //        }
-        if (!isConnect()) {
-            System.out.println("wifi未连接！！！！！");
-            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
-            if (configuredNetworks != null && configuredNetworks.size() > 0) {
-                WifiConfiguration wifiConfiguration = IsExsits(wifiName);
-                if(wifiConfiguration==null){
-//                    if(configuredNetworks.get(0).status==WifiConfiguration.Status.DISABLED){
-//                        wifiManager.enableNetwork(configuredNetworks.get(0).networkId, true);
+//        if (!isConnect()) {
+//            System.out.println("wifi未连接！！！！！");
+//            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                // TODO: Consider calling
+//                //    ActivityCompat#requestPermissions
+//                // here to request the missing permissions, and then overriding
+//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                //                                          int[] grantResults)
+//                // to handle the case where the user grants the permission. See the documentation
+//                // for ActivityCompat#requestPermissions for more details.
+//                return;
+//            }
+//            List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
+//            if (configuredNetworks != null && configuredNetworks.size() > 0) {
+//                WifiConfiguration wifiConfiguration = IsExsits(wifiName);
+//                if(wifiConfiguration==null){
+////                    if(configuredNetworks.get(0).status==WifiConfiguration.Status.DISABLED){
+////                        wifiManager.enableNetwork(configuredNetworks.get(0).networkId, true);
+////                    }
+//                }else {
+//                    for (WifiConfiguration w:configuredNetworks
+//                    ) {
+//                        if(!w.SSID.equals(wifiConfiguration.SSID)&&w.status!= WifiConfiguration.Status.DISABLED){
+//                            wifiManager.disableNetwork(w.networkId);
+//                        }
 //                    }
-                }else {
-                    for (WifiConfiguration w:configuredNetworks
-                    ) {
-                        if(!w.SSID.equals(wifiConfiguration.SSID)&&w.status!= WifiConfiguration.Status.DISABLED){
-                            wifiManager.disableNetwork(w.networkId);
-                        }
-                    }
-//                    wifiManager.reconnect();
-                    wifiManager.enableNetwork(wifiConfiguration.networkId, true);
-                    wifiManager.reconnect();
-                    System.out.println("重新连接wifi");
-                }
-            }
-        }
+////                    wifiManager.reconnect();
+//                    wifiManager.enableNetwork(wifiConfiguration.networkId, true);
+//
+//                    System.out.println("重新连接wifi");
+//                }
+//            }
+//        }
     }
 
     private WifiConfiguration IsExsits(String SSID) {
