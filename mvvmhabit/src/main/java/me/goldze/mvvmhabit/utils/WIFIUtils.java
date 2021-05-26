@@ -22,8 +22,8 @@ public class WIFIUtils {
 
     private BroadcastReceiver wifiScanReceiver;
     private WifiManager wifiManager;
-    private Timer timer;
-    private MyTimerTask task;
+//    private Timer timer;
+//    private MyTimerTask task;
     private Activity activity;
     private String wifiName;
 
@@ -47,13 +47,17 @@ public class WIFIUtils {
                 }
             }
         };
+        if (!wifiManager.isWifiEnabled()) {
+            System.out.println("wifi未打开！！！！！");
+            wifiManager.setWifiEnabled(true);
+        }
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         activity.registerReceiver(wifiScanReceiver, intentFilter);
 
-        task = new MyTimerTask();
-        timer = new Timer();
-        timer.schedule(task, 1000, 10000);
+//        task = new MyTimerTask();
+//        timer = new Timer();
+//        timer.schedule(task, 1000, 10000);
     }
 
 
@@ -74,10 +78,10 @@ public class WIFIUtils {
     }
 
     private void connectWifi(){
-        if (!wifiManager.isWifiEnabled()) {
-            System.out.println("wifi未打开！！！！！");
-            wifiManager.setWifiEnabled(true);
-        }
+//        if (!wifiManager.isWifiEnabled()) {
+//            System.out.println("wifi未打开！！！！！");
+//            wifiManager.setWifiEnabled(true);
+//        }
         if (!isConnect()) {
             System.out.println("wifi未连接！！！！！");
             if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -156,37 +160,37 @@ public class WIFIUtils {
     }
 
     public void unRegisterReceiver(){
-        if(task!=null){
-            task.cancel();
-        }
-        if(timer!=null){
-            timer.cancel();
-        }
-        task = null;
-        timer = null;
+//        if(task!=null){
+//            task.cancel();
+//        }
+//        if(timer!=null){
+//            timer.cancel();
+//        }
+//        task = null;
+//        timer = null;
         if(wifiScanReceiver!=null&&activity!=null){
             activity.unregisterReceiver(wifiScanReceiver);
         }
     }
 
-    class MyTimerTask extends TimerTask {
-
-        @Override
-        public void run() {
-            // TODO Auto-generated method stub
-            try {
-                System.out.println("启动扫描！！！！！");
-                if (!wifiManager.isWifiEnabled()) {
-                    System.out.println("wifi未打开！！！！！");
-                    wifiManager.setWifiEnabled(true);
-                }else {
-                    wifiManager.startScan();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
+//    class MyTimerTask extends TimerTask {
+//
+//        @Override
+//        public void run() {
+//            // TODO Auto-generated method stub
+//            try {
+//                System.out.println("启动扫描！！！！！");
+//                if (!wifiManager.isWifiEnabled()) {
+//                    System.out.println("wifi未打开！！！！！");
+//                    wifiManager.setWifiEnabled(true);
+//                }else {
+//                    wifiManager.startScan();
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//    }
 
 }
