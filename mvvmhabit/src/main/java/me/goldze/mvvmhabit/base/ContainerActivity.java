@@ -128,6 +128,9 @@ public class ContainerActivity extends RxAppCompatActivity {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            if(onTouchDispatchHandler!=null){
+                onTouchDispatchHandler.onTouchDispatchHandler();
+            }
             View v = getCurrentFocus();
             if (isShouldHideKeyboard(v, ev)) {
                 hideKeyboard(v.getWindowToken());
@@ -135,6 +138,16 @@ public class ContainerActivity extends RxAppCompatActivity {
         }
         return super.dispatchTouchEvent(ev);
     }
+
+    public OnTouchDispatchHandler getOnTouchDispatchHandler() {
+        return onTouchDispatchHandler;
+    }
+
+    public void setOnTouchDispatchHandler(OnTouchDispatchHandler onTouchDispatchHandler) {
+        this.onTouchDispatchHandler = onTouchDispatchHandler;
+    }
+
+    private OnTouchDispatchHandler onTouchDispatchHandler;
 
 
     private boolean isShouldHideKeyboard(View v, MotionEvent event) {
@@ -294,6 +307,7 @@ public class ContainerActivity extends RxAppCompatActivity {
         }
         return super.onTouchEvent(event);
     }
+
 
     public OnTouchHandler getOnTouchHandler() {
         return onTouchHandler;
