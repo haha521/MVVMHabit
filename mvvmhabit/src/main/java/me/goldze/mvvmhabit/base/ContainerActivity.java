@@ -285,6 +285,16 @@ public class ContainerActivity extends RxAppCompatActivity {
         super.onStop();
     }
 
+    private OnTouchHandler onTouchHandler;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(onTouchHandler!=null){
+            onTouchHandler.onTouchEvent(event);
+        }
+        return super.onTouchEvent(event);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode==10000){
