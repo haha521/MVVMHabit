@@ -295,6 +295,14 @@ public class ContainerActivity extends RxAppCompatActivity {
         return super.onTouchEvent(event);
     }
 
+    public OnTouchHandler getOnTouchHandler() {
+        return onTouchHandler;
+    }
+
+    public void setOnTouchHandler(OnTouchHandler onTouchHandler) {
+        this.onTouchHandler = onTouchHandler;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode==10000){
