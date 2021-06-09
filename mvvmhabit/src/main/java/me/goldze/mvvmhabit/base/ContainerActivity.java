@@ -56,7 +56,7 @@ public class ContainerActivity extends RxAppCompatActivity {
     private static final String FRAGMENT_TAG = "content_fragment_tag";
     public static final String FRAGMENT = "fragment";
     public static final String BUNDLE = "bundle";
-    private String wifiName = "yidatest";
+//    private String wifiName = "yidatest";
     protected WeakReference<Fragment> mFragment;
 
     @Override
@@ -224,79 +224,79 @@ public class ContainerActivity extends RxAppCompatActivity {
         this.onKeyHandler = onKeyHandler;
     }
 
-    private WIFIUtils wifiUtils;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        RxPermissions rxPermission = new RxPermissions(this);
-        rxPermission.requestEach(Manifest.permission.ACCESS_FINE_LOCATION)
-                .subscribe(new Consumer<Permission>() {
-                    @Override
-                    public void accept(Permission permission) {
-                        if (permission.granted) {// 用户已经同意该权限
-                            if(wifiUtils==null){
-                                wifiUtils = new WIFIUtils((WifiManager) ContainerActivity.this.getApplicationContext().getSystemService(Context.WIFI_SERVICE),ContainerActivity.this,wifiName);
-                            }
-                            if (!wifiUtils.isLocationServiceEnable(getApplicationContext())) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(ContainerActivity.this);
-                                builder.setMessage("系统未打开位置信息服务，是否打开位置服务，以实现自动连接WiFi功能？");
-                                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                        startActivityForResult(intent, 10000);
-                                    }
-                                });
-                                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                                AlertDialog dialog = builder.create();
-                                dialog.show();
-                                Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                                button.setTextSize(28);
-                                Button button2 = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                                button2.setTextSize(28);
-                                button.setTextColor(getResources().getColor(R.color.blue));
-                                button2.setTextColor(getResources().getColor(R.color.blue));
-                                try {
-                                    //获取mAlert对象
-                                    Field mAlert = AlertDialog.class.getDeclaredField("mAlert");
-                                    mAlert.setAccessible(true);
-                                    Object mAlertController = mAlert.get(dialog);
-                                    //获取mMessageView并设置大小颜色
-                                    Field mMessage = mAlertController.getClass().getDeclaredField("mMessageView");
-                                    mMessage.setAccessible(true);
-                                    TextView mMessageView = (TextView) mMessage.get(mAlertController);
-//                mMessageView.setTextColor(Color.BLUE);
-                                    mMessageView.setTextSize(30);
-                                    //获取mTitleView并设置大小颜色
-                                } catch (NoSuchFieldException e) {
-                                    e.printStackTrace();
-                                } catch (IllegalAccessException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                wifiUtils.startWifiListener();
-                            }
-                        } else {
-
-                        }
-                    }
-                });
-    }
-
-    @Override
-    protected void onStop() {
-        if(wifiUtils!=null){
-            wifiUtils.unRegisterReceiver();
-        }
-        super.onStop();
-    }
+//    private WIFIUtils wifiUtils;
+//
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        RxPermissions rxPermission = new RxPermissions(this);
+//        rxPermission.requestEach(Manifest.permission.ACCESS_FINE_LOCATION)
+//                .subscribe(new Consumer<Permission>() {
+//                    @Override
+//                    public void accept(Permission permission) {
+//                        if (permission.granted) {// 用户已经同意该权限
+//                            if(wifiUtils==null){
+//                                wifiUtils = new WIFIUtils((WifiManager) ContainerActivity.this.getApplicationContext().getSystemService(Context.WIFI_SERVICE),ContainerActivity.this,wifiName);
+//                            }
+//                            if (!wifiUtils.isLocationServiceEnable(getApplicationContext())) {
+//                                AlertDialog.Builder builder = new AlertDialog.Builder(ContainerActivity.this);
+//                                builder.setMessage("系统未打开位置信息服务，是否打开位置服务，以实现自动连接WiFi功能？");
+//                                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        dialog.dismiss();
+//                                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                                        startActivityForResult(intent, 10000);
+//                                    }
+//                                });
+//                                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        dialog.dismiss();
+//                                    }
+//                                });
+//                                AlertDialog dialog = builder.create();
+//                                dialog.show();
+//                                Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+//                                button.setTextSize(28);
+//                                Button button2 = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+//                                button2.setTextSize(28);
+//                                button.setTextColor(getResources().getColor(R.color.blue));
+//                                button2.setTextColor(getResources().getColor(R.color.blue));
+//                                try {
+//                                    //获取mAlert对象
+//                                    Field mAlert = AlertDialog.class.getDeclaredField("mAlert");
+//                                    mAlert.setAccessible(true);
+//                                    Object mAlertController = mAlert.get(dialog);
+//                                    //获取mMessageView并设置大小颜色
+//                                    Field mMessage = mAlertController.getClass().getDeclaredField("mMessageView");
+//                                    mMessage.setAccessible(true);
+//                                    TextView mMessageView = (TextView) mMessage.get(mAlertController);
+////                mMessageView.setTextColor(Color.BLUE);
+//                                    mMessageView.setTextSize(30);
+//                                    //获取mTitleView并设置大小颜色
+//                                } catch (NoSuchFieldException e) {
+//                                    e.printStackTrace();
+//                                } catch (IllegalAccessException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            } else {
+//                                wifiUtils.startWifiListener();
+//                            }
+//                        } else {
+//
+//                        }
+//                    }
+//                });
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        if(wifiUtils!=null){
+//            wifiUtils.unRegisterReceiver();
+//        }
+//        super.onStop();
+//    }
 
     private OnTouchHandler onTouchHandler;
 
@@ -317,21 +317,21 @@ public class ContainerActivity extends RxAppCompatActivity {
         this.onTouchHandler = onTouchHandler;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode==10000){
-            if(resultCode==RESULT_OK&&wifiUtils!=null){
-                wifiUtils.startWifiListener();
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public String getWifiName() {
-        return wifiName;
-    }
-
-    public void setWifiName(String wifiName) {
-        this.wifiName = wifiName;
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        if(requestCode==10000){
+//            if(resultCode==RESULT_OK&&wifiUtils!=null){
+//                wifiUtils.startWifiListener();
+//            }
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
+//
+//    public String getWifiName() {
+//        return wifiName;
+//    }
+//
+//    public void setWifiName(String wifiName) {
+//        this.wifiName = wifiName;
+//    }
 }
