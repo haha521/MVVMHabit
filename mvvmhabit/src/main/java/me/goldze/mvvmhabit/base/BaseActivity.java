@@ -137,6 +137,17 @@ public abstract class BaseActivity<V extends ViewDataBinding, VM extends BaseVie
                 startContainerActivity(canonicalName, bundle);
             }
         });
+
+        viewModel.getUC().getStartContainerActivityForResultEvent().observe(this, new Observer<Map<String, Object>>() {
+            @Override
+            public void onChanged(@Nullable Map<String, Object> params) {
+                String canonicalName = (String) params.get(ParameterField.CANONICAL_NAME);
+                Bundle bundle = (Bundle) params.get(ParameterField.BUNDLE);
+                int requestCode = (int) params.get(ParameterField.CODE);
+                startContainerActivityForResult(canonicalName,bundle,requestCode);
+            }
+        });
+
         //关闭界面
         viewModel.getUC().getFinishEvent().observe(this, new Observer<Void>() {
             @Override
@@ -214,6 +225,15 @@ public abstract class BaseActivity<V extends ViewDataBinding, VM extends BaseVie
             intent.putExtra(ContainerActivity.BUNDLE, bundle);
         }
         startActivity(intent);
+    }
+
+    public void startContainerActivityForResult(String canonicalName, Bundle bundle,int requestCode) {
+        Intent intent = new Intent(this, ContainerActivity.class);
+        intent.putExtra(ContainerActivity.FRAGMENT, canonicalName);
+        if (bundle != null) {
+            intent.putExtra(ContainerActivity.BUNDLE, bundle);
+        }
+        startActivityForResult(intent,requestCode);
     }
 
     /**
