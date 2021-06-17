@@ -127,6 +127,16 @@ public class BaseViewModel<M extends BaseModel> extends AndroidViewModel impleme
         uc.startContainerActivityEvent.postValue(params);
     }
 
+    public void startContainerActivityForResult(String canonicalName, Bundle bundle, int requestCode) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(ParameterField.CANONICAL_NAME, canonicalName);
+        if (bundle != null) {
+            params.put(ParameterField.BUNDLE, bundle);
+            params.put(ParameterField.CODE, requestCode);
+        }
+        uc.startContainerActivityForResultEvent.postValue(params);
+    }
+
     /**
      * 关闭界面
      */
@@ -199,6 +209,7 @@ public class BaseViewModel<M extends BaseModel> extends AndroidViewModel impleme
         private SingleLiveEvent<Void> dismissDialogEvent;
         private SingleLiveEvent<Map<String, Object>> startActivityEvent;
         private SingleLiveEvent<Map<String, Object>> startContainerActivityEvent;
+        private SingleLiveEvent<Map<String, Object>> startContainerActivityForResultEvent;
         private SingleLiveEvent<Void> finishEvent;
         private SingleLiveEvent<Void> onBackPressedEvent;
 
@@ -216,6 +227,10 @@ public class BaseViewModel<M extends BaseModel> extends AndroidViewModel impleme
 
         public SingleLiveEvent<Map<String, Object>> getStartContainerActivityEvent() {
             return startContainerActivityEvent = createLiveData(startContainerActivityEvent);
+        }
+
+        public SingleLiveEvent<Map<String, Object>> getStartContainerActivityForResultEvent() {
+            return startContainerActivityForResultEvent = createLiveData(startContainerActivityForResultEvent);
         }
 
         public SingleLiveEvent<Void> getFinishEvent() {
@@ -243,5 +258,6 @@ public class BaseViewModel<M extends BaseModel> extends AndroidViewModel impleme
         public static String CLASS = "CLASS";
         public static String CANONICAL_NAME = "CANONICAL_NAME";
         public static String BUNDLE = "BUNDLE";
+        public static String CODE = "CODE";
     }
 }
