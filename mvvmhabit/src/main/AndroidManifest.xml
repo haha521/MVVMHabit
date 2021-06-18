@@ -9,10 +9,13 @@
     <application>
         <activity
             android:name=".base.ContainerActivity"
-            android:configChanges="orientation|keyboardHidden"></activity>
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".crash.DefaultErrorActivity"
-            android:process=":error_activity" />
+            android:screenOrientation="landscape"
+            android:process=":error_activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
 
         <provider
             android:name=".crash.CaocInitProvider"
